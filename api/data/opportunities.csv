@@ -1,0 +1,21 @@
+id,title,category,tags,description,rating,state,cost,location
+1,Applications of Machine Learning in Medicine - Stanford University,Courses,ml;medicine;stanford,Enter an online course offered by Stanford University on the interplay of ML and Medicine!,4.9,California,Free,National
+2,Study with The Open University,Courses,online;university;education,A free online for students to get hands-on learning experience in a variety of academic subjects!,4.7,National,Free,National
+3,Pennsylvania's Environ Deleware County Grant,Grants,environment;pennsylvania;local,Funds for environmentally-active student based organizations to continue to grow and help our society.,4.8,Pennsylvania,$500,Pennsylvania
+4,Annenberg Youth Academy (AYA) for Media and Civic Engagement,Training Programs,media;civic;youth,An interactive 3-week academy giving students an opportunity to hone skills in public speech journalism and critical thinking.,4.6,Pennsylvania,Free,Pennsylvania
+5,Summer Academy for Math and Science (SAMS),Training Programs,stem;math;science,An opportunity for students to take courses in a variety of STEM fields (math biology physics) & mentorship from CMU faculty.,4.9,Pennsylvania,Free,Pennsylvania
+6,Sadie Nash Leadership Project,Training Programs,leadership;women;youth,A 6-week program for young women and gender-expansive youth to explore their leadership potential.,4.8,New Jersey,Free,New York or Newark New Jersey
+7,Google Software Engineering Apprenticeship,Apprenticeship,software;engineering;tech,A 12-month paid apprenticeship for aspiring software engineers.,4.8,California,Free,California
+8,Amazon Future Engineer Scholarship,Scholarship,scholarship;cs;diversity,$40000 scholarship for students pursuing computer science degrees.,4.7,Washington,Free,Washington
+9,Meta Frontend Nanodegree Grant,Courses,frontend;web;react,A fully funded React and frontend development nanodegree.,4.6,New York,Free,New York
+10,Carnegie Mellon AI Bootcamp,Bootcamp,ai;ml;python,An intensive 10-week AI bootcamp focused on ML fundamentals.,4.9,Pennsylvania,Free,Pennsylvania
+11,Women in Cybersecurity Fellowship,Fellowship,cybersecurity;women;security,A 6-month fellowship supporting women entering cybersecurity.,4.8,Texas,Free,Texas
+12,MIT Launch Entrepreneurship Program,Training Programs,entrepreneurship;business;startup,A 4-week program teaching high school students how to start and run a business.,4.9,Massachusetts,Free,Massachusetts
+13,NASA STEM Engagement Internship,Internship,stem;space;nasa,Paid internship working on real NASA projects in STEM fields.,4.9,National,Free,National
+14,Code2040 Fellows Program,Fellowship,tech;diversity;coding,Fellowship connecting Black and Latinx students with top tech companies.,4.8,California,Free,California
+15,Girls Who Code Summer Immersion Program,Training Programs,coding;women;technology,Free 7-week program teaching coding and computer science to young women.,4.7,National,Free,National
+16,Princeton Summer Journalism Program,Training Programs,journalism;writing;media,Intensive program for students interested in journalism and media careers.,4.6,New Jersey,Free,New Jersey
+17,Yale Young Global Scholars Program,Training Programs,leadership;global;academics,Academic enrichment program for outstanding high school students.,4.9,Connecticut,Free,Connecticut
+18,Microsoft High School Internship Program,Internship,tech;software;microsoft,Paid summer internship for high school students interested in technology.,4.8,Washington,Free,Washington
+19,National Merit Scholarship,Scholarship,academic;merit;scholarship,Academic scholarship recognizing outstanding high school students.,4.9,National,Free,National
+20,Questbridge College Prep Scholarship,Scholarship,college;prep;scholarship,Scholarship and college admission support for high-achieving low-income students.,4.9,National,Free,National
