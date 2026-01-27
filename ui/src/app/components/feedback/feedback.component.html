@@ -1,0 +1,162 @@
+<!-- feedback.component.html -->
+<div class="feedback-container">
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="20" height="20" rx="3" fill="#5DADE2"/>
+        </svg>
+        <span class="logo-text">ScholarSite</span>
+      </div>
+      <div class="nav-links">
+        <a routerLink="/" class="nav-link">Home</a>
+        <a routerLink="/directory" class="nav-link">Directory</a>
+        <a routerLink="/bookmarks" class="nav-link">Bookmarks</a>
+        <a routerLink="/recommendations" class="nav-link">Recommendations</a>
+        <a routerLink="/tips" class="nav-link">Tips to Success</a>
+        <a routerLink="/feedback" class="nav-link active">Feedback</a>
+        <a routerLink="/notifications" class="nav-link">Notifications</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1 class="hero-title">Share Your Feedback With Us!</h1>
+    <p class="hero-description">
+      Let us know if you have any recommendations about ScholarSite's functionality, how you felt an event you found out about through here went, or if you have more events that you would like us to add to the website!
+    </p>
+  </section>
+
+  <!-- Feedback Form Section -->
+  <section class="form-section">
+    <div class="form-container">
+      <h2 class="form-title">Share Your Thoughts</h2>
+      
+      <!-- Success Message -->
+      <div *ngIf="successMessage" class="success-message">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.86" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22 4L12 14.01L9 11.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        {{ successMessage }}
+      </div>
+
+      <form (ngSubmit)="submitFeedback()" class="feedback-form">
+        <div class="form-group">
+          <label class="form-label">Title</label>
+          <input 
+            type="text" 
+            [(ngModel)]="title"
+            name="title"
+            class="form-input" 
+            placeholder="Add a short title"
+            [disabled]="submitting">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Body</label>
+          <textarea 
+            [(ngModel)]="body"
+            name="body"
+            class="form-textarea" 
+            placeholder="Write your thoughts here..."
+            rows="6"
+            [disabled]="submitting"></textarea>
+        </div>
+
+        <button 
+          type="submit" 
+          class="submit-btn"
+          [disabled]="submitting || !title.trim() || !body.trim()">
+          <span *ngIf="!submitting">Submit</span>
+          <span *ngIf="submitting">Submitting...</span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Previous Feedback Section -->
+  <section class="feedback-list-section" *ngIf="feedbackList.length > 0">
+    <div class="feedback-list-container">
+      <h2 class="section-title">Community Feedback</h2>
+      <p class="section-description">See what others are saying about ScholarSite</p>
+
+      <div class="feedback-grid">
+        <div *ngFor="let feedback of feedbackList" class="feedback-card">
+          <div class="feedback-header">
+            <h3 class="feedback-title">{{ feedback.title }}</h3>
+            <span class="feedback-time">{{ getTimeAgo(feedback.timestamp) }}</span>
+          </div>
+          <p class="feedback-body">{{ feedback.body }}</p>
+          <div class="feedback-footer">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 14C11.3137 14 14 11.3137 14 8C14 4.68629 11.3137 2 8 2C4.68629 2 2 4.68629 2 8C2 11.3137 4.68629 14 8 14Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 4V8H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            <span class="feedback-date">{{ formatTimestamp(feedback.timestamp) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <!-- About Section -->
+      <div class="footer-section">
+        <div class="footer-logo">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="16" height="16" rx="2" fill="#5DADE2"/>
+          </svg>
+          <span class="footer-logo-text">ScholarSite</span>
+        </div>
+        <p class="footer-description">
+          Empowering high school students to discover scholarships, grants, courses, and training programs.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-section">
+        <h3 class="footer-heading">Quick Links</h3>
+        <ul class="footer-links">
+          <li><a routerLink="/" class="footer-link">Home</a></li>
+          <li><a routerLink="/directory" class="footer-link">Directory</a></li>
+          <li><a routerLink="/bookmarks" class="footer-link">Bookmarks</a></li>
+          <li><a routerLink="/recommendations" class="footer-link">Recommendations</a></li>
+          <li><a routerLink="/tips" class="footer-link">Tips to Success</a></li>
+          <li><a routerLink="/feedback" class="footer-link">Feedback</a></li>
+          <li><a routerLink="/notifications" class="footer-link">Notifications</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="footer-section">
+        <h3 class="footer-heading">Get in Touch</h3>
+        <a href="mailto:support@scholarsite.com" class="footer-email">
+          support&#64;scholarsite.com
+        </a>
+        <div class="social-links">
+          <a href="#" class="social-link">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 1.66669H12.5C11.3949 1.66669 10.335 2.10567 9.55372 2.88681C8.77258 3.66795 8.33359 4.72789 8.33359 5.83335V8.33335H5.83359V11.6667H8.33359V18.3334H11.6669V11.6667H14.1669L15 8.33335H11.6669V5.83335C11.6669 5.61234 11.7547 5.40038 11.9110 5.24409C12.0673 5.0878 12.2793 5.00002 12.5003 5.00002H15V1.66669Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19.1667 2.50002C18.3687 3.06289 17.4851 3.49357 16.55 3.77502C16.0482 3.19921 15.3812 2.78881 14.6392 2.59716C13.8973 2.40551 13.1163 2.44099 12.3967 2.69872C11.6772 2.95645 11.0519 3.42447 10.6038 4.04004C10.1557 4.6556 9.90645 5.38872 9.90003 6.14169V6.97502C8.53569 7.01121 7.18393 6.7062 5.96326 6.0818C4.74259 5.45739 3.68954 4.53316 2.90003 3.39169C2.90003 3.39169 -0.433301 10.3917 6.56670 13.725C4.94542 14.8031 3.02202 15.3427 1.07503 15.2667C8.07503 19.0834 16.5734 15.2667 16.5734 6.11669C16.5726 5.89902 16.5517 5.68197 16.5109 5.46835C17.3579 4.63946 17.9656 3.59767 18.2667 2.45002L19.1667 2.50002Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M14.1667 1.66669H5.83341C3.53223 1.66669 1.66675 3.53217 1.66675 5.83335V14.1667C1.66675 16.4679 3.53223 18.3334 5.83341 18.3334H14.1667C16.4679 18.3334 18.3334 16.4679 18.3334 14.1667V5.83335C18.3334 3.53217 16.4679 1.66669 14.1667 1.66669Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M13.3334 9.47502C13.4362 10.1685 13.3177 10.8769 12.9948 11.4992C12.6719 12.1215 12.161 12.6262 11.5348 12.9414C10.9085 13.2566 10.1987 13.3663 9.50641 13.2551C8.81416 13.1438 8.17482 12.817 7.67907 12.3213C7.18333 11.8255 6.85652 11.1862 6.74528 10.4939C6.63405 9.80169 6.7437 9.09191 7.05891 8.46565C7.37413 7.83938 7.87881 7.32849 8.50109 7.00558C9.12337 6.68266 9.83178 6.56421 10.5251 6.66669C11.2324 6.77124 11.8874 7.10122 12.393 7.60682C12.8986 8.11242 13.2286 8.76739 13.3334 9.47502Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>

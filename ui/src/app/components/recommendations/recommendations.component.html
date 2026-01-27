@@ -1,0 +1,233 @@
+<!-- recommendations.component.html -->
+<div class="recommendations-container">
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="20" height="20" rx="3" fill="#5DADE2"/>
+        </svg>
+        <span class="logo-text">ScholarSite</span>
+      </div>
+      <div class="nav-links">
+        <a routerLink="/" class="nav-link">Home</a>
+        <a routerLink="/directory" class="nav-link">Directory</a>
+        <a routerLink="/bookmarks" class="nav-link">Bookmarks</a>
+        <a routerLink="/recommendations" class="nav-link active">Recommendations</a>
+        <a routerLink="/tips" class="nav-link">Tips to Success</a>
+        <a routerLink="/feedback" class="nav-link">Feedback</a>
+        <a routerLink="/notifications" class="nav-link">Notifications</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1 class="hero-title">Personalized Recommendations</h1>
+    <p class="hero-description">
+      Based on your bookmarked opportunities, we've curated these suggestions just for you
+    </p>
+  </section>
+
+  <!-- Loading State -->
+  <section *ngIf="loading" class="loading-section">
+    <div class="loading-spinner"></div>
+    <p>Analyzing your preferences...</p>
+  </section>
+
+  <!-- Recommendations Grid -->
+  <section *ngIf="!loading" class="recommendations-section">
+    <div class="recommendations-container-inner">
+      <!-- Info Banner -->
+      <div class="info-banner" *ngIf="bookmarkedOpportunities.length > 0">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Based on your {{ bookmarkedOpportunities.length }} bookmarked opportunities</span>
+      </div>
+
+      <!-- No Bookmarks State -->
+      <div *ngIf="bookmarkedOpportunities.length === 0" class="no-bookmarks-state">
+        <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60 110C87.6142 110 110 87.6142 110 60C110 32.3858 87.6142 10 60 10C32.3858 10 10 32.3858 10 60C10 87.6142 32.3858 110 60 110Z" stroke="#D0D0D0" stroke-width="4"/>
+          <path d="M60 40V60L75 75" stroke="#D0D0D0" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <h3>Start Bookmarking to Get Recommendations!</h3>
+        <p>Bookmark opportunities from the Directory to receive personalized recommendations based on your interests.</p>
+        <a routerLink="/directory" class="cta-button">Browse Directory</a>
+      </div>
+
+      <!-- Recommendations Grid -->
+      <div *ngIf="recommendations.length > 0">
+        <div class="section-header">
+          <h2 class="section-title">Recommended for You</h2>
+          <div class="header-right">
+            <p class="results-count">{{ recommendations.length }} recommendations</p>
+            <select [(ngModel)]="itemsPerPage" (change)="updatePagination(); currentPage = 1" class="items-per-page">
+              <option [value]="5">5 per page</option>
+              <option [value]="10">10 per page</option>
+              <option [value]="20">20 per page</option>
+              <option [value]="50">50 per page</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="opportunities-grid">
+          <div *ngFor="let opp of getPaginatedRecommendations()" class="opportunity-card">
+            <!-- Recommendation Badge -->
+            <div class="recommendation-badge">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 1L10.163 5.38607L15 6.12729L11.5 9.52786L12.326 14.3619L8 12.0809L3.674 14.3619L4.5 9.52786L1 6.12729L5.837 5.38607L8 1Z" fill="currentColor"/>
+              </svg>
+              Recommended for You
+            </div>
+
+            <!-- Category Badge & Bookmark -->
+            <div class="card-header">
+              <span class="category-badge" [style.background-color]="getCategoryColor(opp.category)">
+                {{ opp.category }}
+              </span>
+              <button class="bookmark-btn" 
+                      (click)="toggleBookmark(opp.id)"
+                      [class.bookmarked]="isBookmarked(opp.id)">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 2C4.44772 2 4 2.44772 4 3V18L10 15L16 18V3C16 2.44772 15.5523 2 15 2H5Z" 
+                        [attr.stroke]="isBookmarked(opp.id) ? 'none' : 'currentColor'"
+                        [attr.fill]="isBookmarked(opp.id) ? 'currentColor' : 'none'"
+                        stroke-width="2" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Title -->
+            <h3 class="card-title">{{ opp.title }}</h3>
+
+            <!-- Description -->
+            <p class="card-description">{{ opp.description }}</p>
+
+            <!-- Details -->
+            <div class="card-details">
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 14C10.2091 14 12 12.2091 12 10C12 7.79086 8 3 8 3C8 3 4 7.79086 4 10C4 12.2091 5.79086 14 8 14Z" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                <span>{{ opp.location }}</span>
+              </div>
+
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 6H14M4 2V4M12 2V4M3 3H13C13.5523 3 14 3.44772 14 4V14C14 14.5523 13.5523 15 13 15H3C2.44772 15 2 14.5523 2 14V4C2 3.44772 2.44772 3 3 3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>{{ opp.cost }}</span>
+              </div>
+
+              <div class="detail-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 8C14 11.3137 11.3137 14 8 14C4.68629 14 2 11.3137 2 8C2 4.68629 4.68629 2 8 2C11.3137 2 14 4.68629 14 8Z" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 4V8H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>{{ formatDeadline(opp.deadline) }}</span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card-actions">
+              <button class="view-details-btn" (click)="openDetailsModal(opp)">View Details</button>
+              <button class="share-btn" (click)="openShareModal(opp)">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15 6.5C16.3807 6.5 17.5 5.38071 17.5 4C17.5 2.61929 16.3807 1.5 15 1.5C13.6193 1.5 12.5 2.61929 12.5 4C12.5 4.11662 12.5069 4.23168 12.5204 4.34472L7.89062 7.03956C7.40969 6.56066 6.7389 6.25 6 6.25C4.61929 6.25 3.5 7.36929 3.5 8.75C3.5 10.1307 4.61929 11.25 6 11.25C6.7389 11.25 7.40969 10.9393 7.89062 10.4604L12.5204 13.1553C12.5069 13.2683 12.5 13.3834 12.5 13.5C12.5 14.8807 13.6193 16 15 16C16.3807 16 17.5 14.8807 17.5 13.5C17.5 12.1193 16.3807 11 15 11C14.2611 11 13.5903 11.3107 13.1094 11.7896L8.47962 9.09472C8.49314 8.98168 8.5 8.86662 8.5 8.75C8.5 8.63338 8.49314 8.51832 8.47962 8.40528L13.1094 5.71044C13.5903 6.18934 14.2611 6.5 15 6.5Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" *ngIf="totalPages > 1">
+          <button class="pagination-btn" (click)="previousPage()" [disabled]="currentPage === 1">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Previous
+          </button>
+
+          <div class="pagination-numbers">
+            <button 
+              *ngFor="let page of getPageNumbers()"
+              class="pagination-number"
+              [class.active]="page === currentPage"
+              [class.ellipsis]="page === -1"
+              (click)="page !== -1 && goToPage(page)"
+              [disabled]="page === -1">
+              {{ page === -1 ? '...' : page }}
+            </button>
+          </div>
+
+          <button class="pagination-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+            Next
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Details Modal (same as directory) -->
+  <div *ngIf="showDetailsModal" class="modal-overlay" (click)="closeDetailsModal()">
+    <div class="modal-content details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">{{ selectedOpportunity?.title }}</h3>
+        <button class="modal-close" (click)="closeDetailsModal()">×</button>
+      </div>
+      <div class="details-body">
+        <div class="details-category-badge" [style.background-color]="getCategoryColor(selectedOpportunity?.category || '')">
+          {{ selectedOpportunity?.category }}
+        </div>
+        <div class="details-info">
+          <div class="info-row">
+            <span>{{ selectedOpportunity?.location }}</span>
+          </div>
+          <div class="info-row">
+            <span>{{ selectedOpportunity?.cost }}</span>
+          </div>
+          <div class="info-row">
+            <span>Deadline: {{ formatDeadline(selectedOpportunity?.deadline || '') }}</span>
+          </div>
+        </div>
+        <div class="details-section">
+          <h4 class="section-heading">Description</h4>
+          <p class="section-text">{{ selectedOpportunity?.description }}</p>
+        </div>
+        <div class="details-section">
+          <h4 class="section-heading">Eligibility</h4>
+          <p class="section-text">Open to all learners.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share Modal (same as directory) -->
+  <div *ngIf="showShareModal" class="modal-overlay" (click)="closeShareModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Share Opportunity</h3>
+        <button class="modal-close" (click)="closeShareModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <h4 class="opportunity-title">{{ selectedOpportunity?.title }}</h4>
+        <p class="opportunity-description">{{ selectedOpportunity?.description }}</p>
+        <div class="share-buttons">
+          <button class="share-option" (click)="shareViaEmail()">Share via Email</button>
+          <button class="share-option" (click)="shareOnFacebook()">Share on Facebook</button>
+          <button class="share-option" (click)="shareOnTwitter()">Share on Twitter</button>
+          <button class="share-option" (click)="shareOnLinkedIn()">Share on LinkedIn</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

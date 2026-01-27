@@ -1,0 +1,374 @@
+/* tips.component.css - Chrome Crash Fix Version */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.tips-container {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navigation - REMOVED STICKY (Chrome bug with grid + sticky) */
+.navbar {
+  background-color: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0.75rem 2rem;
+  position: relative; /* Changed from sticky */
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #5DADE2;
+  margin-right: 2rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #666;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #5DADE2;
+}
+
+/* Hero - SIMPLIFIED GRADIENT */
+.hero {
+  background-color: #5DADE2; /* Simplified from gradient */
+  padding: 4rem 2rem;
+  text-align: center;
+  color: white;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.hero-description {
+  font-size: 1.125rem;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Tips Section */
+.tips-section {
+  padding: 3rem 2rem;
+  flex: 1;
+}
+
+.tips-container-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* CRITICAL FIX: Changed grid to flexbox */
+.tips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.tip-card {
+  flex: 1 1 calc(50% - 1rem); /* Changed from grid to flex */
+  min-width: 500px;
+  padding: 2rem;
+  border-radius: 12px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-out; /* Simplified transition */
+  /* Removed will-change as it can cause issues */
+}
+
+/* Color classes */
+.tip-card-blue {
+  background-color: #B3E5FC;
+}
+
+.tip-card-purple {
+  background-color: #D1C4E9;
+}
+
+.tip-card-green {
+  background-color: #C8E6C9;
+}
+
+.tip-card-pink {
+  background-color: #F8BBD0;
+}
+
+.tip-card-orange {
+  background-color: #FFE0B2;
+}
+
+.tip-card-peach {
+  background-color: #FFCCBC;
+}
+
+.tip-card:hover {
+  transform: translateY(-4px);
+  /* Removed box-shadow from hover */
+}
+
+.tip-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+.tip-description {
+  font-size: 1rem;
+  color: #34495e;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.tip-points {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tip-points li {
+  position: relative;
+  padding-left: 1.75rem;
+  color: #2c3e50;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.tip-points li::before {
+  content: '•';
+  position: absolute;
+  left: 0.5rem;
+  font-size: 1.5rem;
+  color: #34495e;
+  font-weight: bold;
+}
+
+/* Checklist Section */
+.checklist-section {
+  margin-top: 3rem;
+}
+
+.checklist-card {
+  background-color: #FF6B6B; /* Simplified from gradient */
+  padding: 2.5rem;
+  border-radius: 12px;
+  color: white;
+  /* Removed box-shadow */
+}
+
+.checklist-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.checklist-subtitle {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  opacity: 0.95;
+}
+
+.checklist-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1.25rem;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.checklist-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.checklist-item svg,
+.check-icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  width: 24px;
+  height: 24px;
+}
+
+.checklist-item span {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+  background-color: #f8f9fa;
+  padding: 3rem 2rem 2rem;
+  border-top: 1px solid #e0e0e0;
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex; /* Changed from grid to flex */
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 300px;
+}
+
+.footer-section:first-child {
+  flex: 2 1 400px;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.footer-logo-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #5DADE2;
+}
+
+.footer-description {
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.footer-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.footer-link {
+  color: #5DADE2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.footer-link:hover {
+  color: #4A9CD0;
+}
+
+.footer-email {
+  color: #5DADE2;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-link {
+  color: #5DADE2;
+  transition: color 0.3s;
+}
+
+.social-link:hover {
+  color: #4A9CD0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .tips-grid {
+    flex-direction: column;
+  }
+  
+  .tip-card {
+    flex: 1 1 100%;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .tips-grid {
+    gap: 1.5rem;
+  }
+
+  .tip-card {
+    padding: 1.5rem;
+  }
+
+  .checklist-card {
+    padding: 1.5rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}

@@ -1,0 +1,89 @@
+<!-- home.component.html -->
+<div class="home-container">
+  <!-- Navigation Header -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="20" height="20" rx="3" fill="#5DADE2"/>
+        </svg>
+        <span class="logo-text">ScholarSite</span>
+      </div>
+    <div class="nav-links">
+  <a routerLink="/" class="nav-link">Home</a>
+  <a routerLink="/directory" class="nav-link">Directory</a>
+  <a routerLink="/bookmarks" class="nav-link">Bookmarks</a>
+  <a routerLink="/recommendations" class="nav-link">Recommendations</a>
+  <a routerLink="/tips" class="nav-link">Tips to Success</a>
+  <a routerLink="/feedback" class="nav-link">Feedback</a>
+  <a routerLink="/notifications" class="nav-link">Notifications</a>
+</div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1 class="hero-title">Discover Your Future Today!</h1>
+    <p class="hero-description">
+      Find free scholarships, grants, courses, and training programs tailored to your state and interests. Your educational journey starts here.
+    </p>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="features-container">
+      <div *ngFor="let feature of features" 
+           class="feature-card" 
+           [style.background-color]="feature.color">
+        <p class="feature-text">{{ feature.text }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <!-- About Section -->
+      <div class="footer-section">
+        <div class="footer-logo">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="16" height="16" rx="2" fill="#5DADE2"/>
+          </svg>
+          <span class="footer-logo-text">ScholarSite</span>
+        </div>
+        <p class="footer-description">
+          Empowering high school students to discover scholarships, grants, courses, and training programs.
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-section">
+        <h3 class="footer-heading">Quick Links</h3>
+        <ul class="footer-links">
+          <li *ngFor="let link of quickLinks">
+            <a [href]="link.route" class="footer-link">{{ link.name }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact Section -->
+      <div class="footer-section">
+        <h3 class="footer-heading">Get in Touch</h3>
+        <a href="mailto:support@scholarsite.com" class="footer-email">
+          support&#64;scholarsite.com
+        </a>
+        <div class="social-links">
+          <a href="#" class="social-link">
+            <i class="fab fa-facebook"></i>
+          </a>
+          <a href="#" class="social-link">
+            <i class="fab fa-twitter"></i>
+          </a>
+          <a href="#" class="social-link">
+            <i class="fab fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</div>
