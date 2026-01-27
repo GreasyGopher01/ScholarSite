@@ -47,7 +47,8 @@ export class RecommendationsComponent implements OnInit {
   itemsPerPage: number = 10;
   totalPages: number = 1;
 
-  private apiUrl = 'http://localhost:8000';
+    //private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'https://scholarsite-1.onrender.com';
 
   constructor(
     private http: HttpClient,
