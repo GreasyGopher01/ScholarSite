@@ -45,7 +45,8 @@ export class NotificationsComponent implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
 
-  private apiUrl = 'http://localhost:8000';
+  //private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'https://scholarsite-1.onrender.com';
 
   constructor(
     private http: HttpClient,
