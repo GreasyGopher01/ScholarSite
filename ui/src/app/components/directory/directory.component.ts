@@ -49,7 +49,8 @@ export class DirectoryComponent implements OnInit {
   totalPages: number = 1;
   itemsPerPageOptions: number[] = [5, 10, 15, 20, 25, 50];
 
-  private apiUrl = 'http://localhost:8000';
+    //private apiUrl = 'http://localhost:8000';
+  private apiUrl = 'https://scholarsite-1.onrender.com';
 
   constructor(
     private http: HttpClient,
