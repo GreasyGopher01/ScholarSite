@@ -5,9 +5,11 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
+
+# Add CORS - CRITICAL for Angular to connect!
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["*"],  # Update after deployment
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
