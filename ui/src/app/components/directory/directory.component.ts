@@ -3,6 +3,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../services/auth.service';
 
 interface Opportunity {
   id: number;
@@ -53,7 +54,8 @@ export class DirectoryComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -90,13 +92,19 @@ export class DirectoryComponent implements OnInit {
   }
 
   loadBookmarks(): void {
-    this.http.get<{id: number}[]>(`${this.apiUrl}/bookmarks`).subscribe({
-      next: (data) => {
-        this.bookmarkedIds = data.map(b => b.id);
-        console.log('📌 Loaded bookmarks:', this.bookmarkedIds);
+    if (!this.authService.isAuthenticated) {
+      this.bookmarkedIds = [];
+      return;
+    }
+    
+    this.authService.getUserBookmarks().subscribe({
+      next: (bookmarks) => {
+        this.bookmarkedIds = bookmarks;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error loading bookmarks:', error);
+        this.bookmarkedIds = [];
       }
     });
   }
@@ -241,8 +249,13 @@ export class DirectoryComponent implements OnInit {
   }
 
   toggleBookmark(id: number): void {
+    if (!this.authService.isAuthenticated) {
+      alert('Please sign in to bookmark opportunities');
+      return;
+    }
+    
     if (this.isBookmarked(id)) {
-      this.http.delete(`${this.apiUrl}/bookmarks/${id}`).subscribe({
+      this.authService.removeBookmark(id).subscribe({
         next: () => {
           this.bookmarkedIds = this.bookmarkedIds.filter(bId => bId !== id);
           this.cdr.detectChanges();
@@ -252,7 +265,7 @@ export class DirectoryComponent implements OnInit {
         }
       });
     } else {
-      this.http.post(`${this.apiUrl}/bookmarks/${id}`, {}).subscribe({
+      this.authService.addBookmark(id).subscribe({
         next: () => {
           this.bookmarkedIds.push(id);
           this.cdr.detectChanges();

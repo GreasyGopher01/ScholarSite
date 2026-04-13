@@ -1,0 +1,126 @@
+<!-- login.component.html -->
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="40" height="40" rx="8" fill="#5DADE2"/>
+        </svg>
+      </div>
+      <h1 class="login-title">Welcome to ScholarSite</h1>
+      <p class="login-subtitle">Sign in to access your opportunities</p>
+    </div>
+
+    <div class="login-body">
+      <!-- Social Login Buttons -->
+      <div class="social-login">
+        <!-- Google Sign-In Button -->
+        <div id="googleSignInButton" class="google-button-container"></div>
+
+        <!-- Apple Sign-In Button -->
+        <div 
+          id="appleid-signin" 
+          class="apple-signin-button"
+          data-color="black" 
+          data-border="true" 
+          data-type="sign in"
+          data-width="280"
+          data-height="44">
+        </div>
+      </div>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <!-- Email/Password Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input 
+            type="email" 
+            formControlName="email"
+            class="form-input"
+            [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+            placeholder="Enter your email">
+          <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            Please enter a valid email
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input 
+            type="password" 
+            formControlName="password"
+            class="form-input"
+            [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+            placeholder="Enter your password">
+          <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            Password must be at least 6 characters
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" formControlName="rememberMe">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-password">Forgot password?</a>
+        </div>
+
+        <button 
+          type="submit" 
+          class="submit-btn"
+          [disabled]="loginForm.invalid || isLoading">
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading" class="loading-spinner"></span>
+        </button>
+
+        <div class="error-alert" *ngIf="errorMessage">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M10 6V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10 14H10.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          {{ errorMessage }}
+        </div>
+      </form>
+
+      <div class="signup-link">
+        Don't have an account? <a routerLink="/register">Sign up</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature-item">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#5DADE2" stroke-width="2"/>
+        <path d="M9 12L11 14L15 10" stroke="#5DADE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h3>Track Opportunities</h3>
+        <p>Save and organize scholarships, grants, and more</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 2C4.44772 2 4 2.44772 4 3V21L12 17L20 21V3C20 2.44772 19.5523 2 19 2H5Z" stroke="#5DADE2" stroke-width="2"/>
+      </svg>
+      <div>
+        <h3>Bookmark & Share</h3>
+        <p>Keep your favorite opportunities at your fingertips</p>
+      </div>
+    </div>
+    <div class="feature-item">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#5DADE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <h3>Get Recommendations</h3>
+        <p>Personalized suggestions based on your interests</p>
+      </div>
+    </div>
+  </div>
+</div>

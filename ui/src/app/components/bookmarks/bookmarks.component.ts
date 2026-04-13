@@ -3,7 +3,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 interface Opportunity {
   id: number;
@@ -42,7 +43,9 @@ export class BookmarksComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -51,13 +54,17 @@ export class BookmarksComponent implements OnInit {
   }
 
   loadBookmarks(): void {
+    if (!this.authService.isAuthenticated) {
+      this.bookmarkedOpportunities = [];
+      this.router.navigate(['/login']);
+      return;
+    }
+
     console.log('🔵 Loading bookmarks...');
-    this.http.get<{id: number}[]>(`${this.apiUrl}/bookmarks`).subscribe({
-      next: (bookmarks) => {
-        console.log('✅ Received bookmarks:', bookmarks);
-        const bookmarkIds = bookmarks.map(b => b.id);
-        console.log('📌 Bookmark IDs:', bookmarkIds);
-        
+    this.authService.getUserBookmarks().subscribe({
+      next: (bookmarkIds) => {
+        console.log('✅ Received bookmarked IDs:', bookmarkIds);
+
         this.http.get<Opportunity[]>(`${this.apiUrl}/opportunities`).subscribe({
           next: (opportunities) => {
             console.log('✅ Received all opportunities:', opportunities);
@@ -89,7 +96,13 @@ export class BookmarksComponent implements OnInit {
   }
 
   removeBookmark(id: number): void {
-    this.http.delete(`${this.apiUrl}/bookmarks/${id}`).subscribe({
+    if (!this.authService.isAuthenticated) {
+      alert('Please sign in to remove bookmarks');
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.authService.removeBookmark(id).subscribe({
       next: () => {
         this.bookmarkedOpportunities = this.bookmarkedOpportunities.filter(
           opp => opp.id !== id

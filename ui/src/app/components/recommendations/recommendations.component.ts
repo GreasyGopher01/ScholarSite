@@ -3,7 +3,8 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 interface Opportunity {
   id: number;
@@ -51,11 +52,18 @@ export class RecommendationsComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     console.log('🚀 Recommendations component initialized');
+    if (!this.authService.isAuthenticated) {
+      console.warn('Recommendations require login; redirecting to /login');
+      this.router.navigate(['/login']);
+      return;
+    }
     this.loadRecommendations();
   }
 
