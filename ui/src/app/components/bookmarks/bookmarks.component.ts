@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 interface Opportunity {
   id: number;
@@ -40,7 +41,7 @@ export class BookmarksComponent implements OnInit {
   totalPages: number = 1;
   itemsPerPageOptions: number[] = [5, 10, 15, 20, 25, 50];
 
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

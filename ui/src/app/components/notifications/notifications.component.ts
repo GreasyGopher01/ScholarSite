@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 interface Subscription {
   id?: number;
@@ -45,7 +46,7 @@ export class NotificationsComponent implements OnInit {
   successMessage: string = '';
   errorMessage: string = '';
 
-  private apiUrl = 'http://localhost:8000';
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private http: HttpClient,

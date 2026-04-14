@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 declare const google: any;
 
@@ -30,7 +31,7 @@ export interface AuthResponse {
 export class AuthService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = `${environment.apiUrl}/api`;
   public redirectUrl: string | null = null;
 
   constructor(private http: HttpClient, private router: Router) {
