@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://scholarsite-1.onrender.com'  // Your Render URL
+  apiUrl: 'https://scholarsite-ly19.onrender.com'  // Your Render URL
 };
