@@ -29,7 +29,12 @@ app = FastAPI()
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:4200",
+        "http://localhost:3000",
+        "https://scholar-site.vercel.app",
+        "https://scholar-site-j02vo44mu-taufeeqs-projects-dbb5c752.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
