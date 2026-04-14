@@ -10,6 +10,7 @@ pydantic-settings
 python-jose[cryptography]
 python-multipart
 google-auth
+requests
 python-dotenv
 dnspython
 pytest
@@ -17,5 +18,6 @@ httpx
 pytest-asyncio
 PyJWT
 pydantic[email]
+email-validator
 passlib[bcrypt]
 
