@@ -13,7 +13,6 @@ import os
 import base64
 from dotenv import load_dotenv
 from bson import ObjectId
-import csv
 
 load_dotenv()
 
@@ -42,6 +41,7 @@ db = client[DATABASE_NAME]
 users_collection = db.users
 bookmarks_collection = db.bookmarks
 opportunities_collection = db.opportunities
+tips_collection = db.tips
 feedback_collection = db.feedback
 subscriptions_collection = db.subscriptions
 
@@ -123,44 +123,30 @@ def serialize_user(user: dict) -> dict:
         "bio": user.get("bio")
     }
 
-# -----------------------------
-# Helper to load CSV files
-# -----------------------------
-def load_csv(filename):
-    with open(filename, newline='', encoding='utf-8') as f:
-        return list(csv.DictReader(f))
+
+def parse_deadline(deadline_value):
+    if isinstance(deadline_value, datetime):
+        return deadline_value
+
+    if isinstance(deadline_value, str):
+        for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S"]:
+            try:
+                return datetime.strptime(deadline_value, fmt)
+            except ValueError:
+                continue
+
+    return None
+
+
+def is_active_opportunity(opportunity: dict) -> bool:
+    deadline = parse_deadline(opportunity.get("deadline"))
+    if deadline is None:
+        return True
+    return deadline >= datetime.utcnow()
 
 # -----------------------------
-# Load opportunities from CSV
+# Tips collection is stored in MongoDB
 # -----------------------------
-opportunities_raw = load_csv("data/opportunities.csv")
-
-# Transform opportunities to match UI expectations
-opportunities_list = []
-for opp in opportunities_raw:
-    # Calculate a future deadline
-    days_ahead = int(opp.get('id', 1)) * 30
-    deadline = datetime.now() + timedelta(days=days_ahead)
-    
-    cost = opp.get('cost', 'Free')
-    if not cost:
-        cost = "Free" if opp.get('category') in ['Scholarship', 'Fellowship', 'Apprenticeship'] else "$500"
-    
-    location = opp.get('location', opp.get('state', 'Unknown'))
-    
-    opportunities_list.append({
-        "id": int(opp['id']),
-        "title": opp['title'],
-        "description": opp['description'],
-        "category": opp['category'],
-        "state": opp['state'],
-        "cost": cost,
-        "deadline": deadline.strftime("%Y-%m-%d %H:%M:%S"),
-        "location": location
-    })
-
-# Load tips from CSV
-tips = load_csv("data/tips.csv")
 
 # -----------------------------
 # Startup event - Create indexes
@@ -173,13 +159,9 @@ async def startup_db_client():
     await users_collection.create_index("googleId")
     await bookmarks_collection.create_index([("userId", 1), ("opportunityId", 1)], unique=True)
     await opportunities_collection.create_index("id", unique=True)
+    await tips_collection.create_index("createdAt")
     await feedback_collection.create_index("timestamp")
     await subscriptions_collection.create_index("email")
-
-    # Seed the opportunities collection if empty
-    if await opportunities_collection.count_documents({}) == 0:
-        await opportunities_collection.insert_many(opportunities_list)
-        print(f"Inserted {len(opportunities_list)} opportunities into MongoDB")
 
     print("MongoDB connected and indexes created")
 
@@ -333,8 +315,9 @@ async def delete_account(user: dict = Depends(verify_token)):
 
 @app.get("/opportunities")
 async def get_opportunities():
-    """Get all opportunities from MongoDB"""
+    """Get all active opportunities from MongoDB"""
     opportunities = await opportunities_collection.find().to_list(length=1000)
+    active_opps = [opp for opp in opportunities if is_active_opportunity(opp)]
     return [
         {
             "id": opp["id"],
@@ -344,9 +327,10 @@ async def get_opportunities():
             "state": opp["state"],
             "cost": opp.get("cost"),
             "deadline": opp.get("deadline"),
-            "location": opp.get("location")
+            "location": opp.get("location"),
+            "sourceLink": opp.get("sourceLink")
         }
-        for opp in opportunities
+        for opp in active_opps
     ]
 
 # =============================================================================
@@ -421,8 +405,17 @@ async def remove_bookmark_legacy(id: int):
 
 @app.get("/tips")
 async def get_tips():
-    """Get all tips"""
-    return tips
+    """Get all tips from MongoDB"""
+    tip_docs = await tips_collection.find().to_list(length=100)
+    return [
+        {
+            "id": str(doc.get("_id")),
+            "title": doc.get("title", ""),
+            "body": doc.get("body", ""),
+            "createdAt": doc.get("createdAt")
+        }
+        for doc in tip_docs
+    ]
 
 # =============================================================================
 # RECOMMENDATIONS ENDPOINTS
@@ -431,8 +424,10 @@ async def get_tips():
 @app.get("/recommendations")
 async def get_recommendations():
     """Get recommended opportunities"""
+    opportunities = await opportunities_collection.find().sort("id", 1).to_list(length=100)
+    active_opportunities = [opp for opp in opportunities if is_active_opportunity(opp)]
     return {
-        "recommendations": opportunities_list[:5]
+        "recommendations": active_opportunities[:5]
     }
 
 # =============================================================================

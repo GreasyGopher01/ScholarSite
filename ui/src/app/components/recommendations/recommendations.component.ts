@@ -16,6 +16,7 @@ interface Opportunity {
   deadline: string;
   location: string;
   tags?: string;
+  sourceLink?: string;
 }
 
 interface RecommendationScore {

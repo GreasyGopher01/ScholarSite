@@ -222,6 +222,11 @@
           <h4 class="section-heading">Eligibility</h4>
           <p class="section-text">Open to all learners.</p>
         </div>
+        <div *ngIf="selectedOpportunity?.sourceLink" class="details-actions">
+          <a class="action-btn source-link-btn" [href]="selectedOpportunity?.sourceLink" target="_blank" rel="noopener noreferrer">
+            Visit opportunity page
+          </a>
+        </div>
       </div>
     </div>
   </div>

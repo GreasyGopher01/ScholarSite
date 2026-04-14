@@ -51,7 +51,10 @@ export class ProfileComponent implements OnInit {
       if (user) {
         this.profileForm.patchValue({
           name: user.name,
-          email: user.email
+          email: user.email,
+          phone: user.phone || '',
+          location: user.location || '',
+          bio: user.bio || ''
         });
         this.loadUserStats();
       } else {
@@ -61,11 +64,17 @@ export class ProfileComponent implements OnInit {
   }
 
   loadUserStats(): void {
-    // Load user statistics from backend
-    // For now, using placeholder values
-    this.bookmarksCount = 8;
-    this.applicationsCount = 12;
-    this.savedCount = 25;
+    this.authService.getUserBookmarks().subscribe({
+      next: (bookmarkIds: number[]) => {
+        this.bookmarksCount = bookmarkIds.length;
+        this.savedCount = bookmarkIds.length;
+      },
+      error: (error: any) => {
+        console.error('Failed to load bookmark stats', error);
+        this.bookmarksCount = 0;
+        this.savedCount = 0;
+      }
+    });
   }
 
   passwordMatchValidator(form: FormGroup) {
@@ -162,7 +171,10 @@ export class ProfileComponent implements OnInit {
   resetForm(): void {
     this.profileForm.patchValue({
       name: this.user?.name,
-      email: this.user?.email
+      email: this.user?.email,
+      phone: this.user?.phone || '',
+      location: this.user?.location || '',
+      bio: this.user?.bio || ''
     });
     this.profileForm.markAsPristine();
   }

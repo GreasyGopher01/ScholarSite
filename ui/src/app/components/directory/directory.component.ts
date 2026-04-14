@@ -14,6 +14,7 @@ interface Opportunity {
   cost: string;
   deadline: string;
   location: string;
+  sourceLink?: string;
 }
 
 @Component({

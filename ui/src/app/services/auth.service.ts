@@ -13,6 +13,9 @@ export interface User {
   name: string;
   picture?: string;
   provider: 'google' | 'apple' | 'email';
+  phone?: string;
+  location?: string;
+  bio?: string;
   createdAt?: string;
 }
 
