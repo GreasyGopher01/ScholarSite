@@ -72,10 +72,10 @@ export class RecommendationsComponent implements OnInit {
   loadRecommendations(): void {
     this.loading = true;
     
-    // Load bookmarks
-    this.http.get<{id: number}[]>(`${this.apiUrl}/bookmarks`).subscribe({
-      next: (bookmarks) => {
-        this.bookmarkedIds = bookmarks.map(b => b.id);
+    // Load bookmarks using authenticated API
+    this.authService.getUserBookmarks().subscribe({
+      next: (bookmarkIds) => {
+        this.bookmarkedIds = bookmarkIds;
         
         // Load all opportunities
         this.http.get<Opportunity[]>(`${this.apiUrl}/opportunities`).subscribe({
@@ -94,8 +94,16 @@ export class RecommendationsComponent implements OnInit {
             this.updatePagination();
             this.loading = false;
             this.cdr.detectChanges();
+          },
+          error: (error) => {
+            console.error('❌ Error loading opportunities:', error);
+            this.loading = false;
           }
         });
+      },
+      error: (error) => {
+        console.error('❌ Error loading bookmarks:', error);
+        this.loading = false;
       }
     });
   }
@@ -261,18 +269,23 @@ export class RecommendationsComponent implements OnInit {
 
   toggleBookmark(id: number): void {
     if (this.isBookmarked(id)) {
-      this.http.delete(`${this.apiUrl}/bookmarks/${id}`).subscribe({
+      this.authService.removeBookmark(id).subscribe({
         next: () => {
           this.bookmarkedIds = this.bookmarkedIds.filter(bId => bId !== id);
-          this.cdr.detectChanges();
+          this.loadRecommendations();
+        },
+        error: (error) => {
+          console.error('❌ Error removing bookmark:', error);
         }
       });
     } else {
-      this.http.post(`${this.apiUrl}/bookmarks/${id}`, {}).subscribe({
+      this.authService.addBookmark(id).subscribe({
         next: () => {
           this.bookmarkedIds.push(id);
-          // Refresh recommendations after bookmarking
           this.loadRecommendations();
+        },
+        error: (error) => {
+          console.error('❌ Error adding bookmark:', error);
         }
       });
     }
