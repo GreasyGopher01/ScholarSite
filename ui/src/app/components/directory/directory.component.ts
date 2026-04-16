@@ -294,10 +294,29 @@ export class DirectoryComponent implements OnInit {
   }
 
   formatDeadline(deadline: string): string {
-    const date = new Date(deadline);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
+    const value = (deadline || '').trim();
+    if (!value) {
+      return 'N/A';
+    }
+
+    const date = new Date(value);
+    const datePattern = /^(?:\d{4}-\d{2}-\d{2}(?:[T\s]\d{2}:\d{2}(?::\d{2})?)?|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+\d{4}(?:\s+\d{1,2}:\d{2}(?:\s*[APMapm]{2})?)?|\d{1,2}\/\d{1,2}\/\d{4}(?:\s+\d{1,2}:\d{2}(?:\s*[APMapm]{2})?)?)$/;
+    if (isNaN(date.getTime()) || !datePattern.test(value)) {
+      return value;
+    }
+
+    const isMidnight = date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0;
+    if (isMidnight) {
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit'
