@@ -49,13 +49,51 @@ pip install -r requirements.txt
 
 # 2. Configure
 cp .env.example .env
-# Edit .env with your MongoDB Atlas URI
+# Edit .env with your MongoDB Atlas URI and email settings
 
 # 3. Run once
 python scraper.py
 
 # 4. Run on weekly schedule
 python scraper.py --schedule
+```
+
+## Email Log Delivery
+
+Add these env vars to `batch/.env` if you want the scraper run logs emailed after every execution:
+
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your-smtp-user
+SMTP_PASSWORD=your-smtp-password
+SMTP_USE_TLS=true
+SMTP_USE_SSL=false
+EMAIL_FROM=alerts@example.com
+EMAIL_TO=you@example.com,admin@example.com
+```
+## Windows Scheduled Task
+
+Use the included PowerShell helper to create a Windows Scheduled Task for the scraper.
+
+```powershell
+cd batch
+powershell -ExecutionPolicy Bypass -File register-scraper-task.ps1
+```
+
+The default task runs weekly on Monday at 6:00 AM.
+
+To customize the schedule:
+
+```powershell
+# Run every hour for 24 hours starting at midnight
+powershell -ExecutionPolicy Bypass -File register-scraper-task.ps1 -Frequency Hourly -At 12:00AM -IntervalMinutes 60 -RepetitionDurationHours 24
+
+# Run every 2 hours daily starting at midnight
+powershell -ExecutionPolicy Bypass -File register-scraper-task.ps1 -Frequency Daily -At 12:00AM -IntervalMinutes 120 -RepetitionDurationHours 24
+
+# Run every hour on Monday and Friday starting at 4:00 AM
+powershell -ExecutionPolicy Bypass -File register-scraper-task.ps1 -Frequency Weekly -DaysOfWeek Monday,Friday -At 04:00AM -IntervalMinutes 60 -RepetitionDurationHours 24
 ```
 
 ## Deploy to Render (recommended — free cron)
