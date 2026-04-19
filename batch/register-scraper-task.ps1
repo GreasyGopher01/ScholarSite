@@ -12,7 +12,7 @@ param(
 
     [string]$TaskName = "ScholarSiteScraper"
 )
-
+#Create the scheduled task action to run the scraper.py script using Python
 $batchDir = Split-Path -Parent $PSCommandPath
 $scriptPath = Join-Path $batchDir "scraper.py"
 $command = "cd /d `"$batchDir`" && py -3 `"$scriptPath`""
