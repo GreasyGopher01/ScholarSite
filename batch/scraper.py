@@ -24,10 +24,13 @@ import hashlib
 import logging
 import os
 import re
+import smtplib
 import sys
 import time
 import argparse
 from datetime import datetime, timezone
+from email.message import EmailMessage
+from io import StringIO
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
@@ -171,6 +174,67 @@ def resolve_link(href: str, base_url: str, source_domain: str) -> str:
     return base_url
 
 
+def get_env_list(key: str) -> list[str]:
+    return [item.strip() for item in os.getenv(key, "").split(",") if item.strip()]
+
+
+def send_email(subject: str, body: str) -> None:
+    host = os.getenv("SMTP_HOST")
+    if not host:
+        log.warning("SMTP_HOST is not configured; skipping email delivery.")
+        return
+
+    to_addrs = get_env_list("EMAIL_TO")
+    if not to_addrs:
+        log.warning("EMAIL_TO is not configured; skipping email delivery.")
+        return
+
+    port = int(os.getenv("SMTP_PORT", "587"))
+    user = os.getenv("SMTP_USER")
+    password = os.getenv("SMTP_PASSWORD")
+    from_addr = os.getenv("EMAIL_FROM", user or "no-reply@example.com")
+    subject = os.getenv("EMAIL_SUBJECT", subject)
+
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = from_addr
+    message["To"] = ", ".join(to_addrs)
+    message.set_content(body)
+
+    use_ssl = os.getenv("SMTP_USE_SSL", "false").lower() in ("1", "true", "yes")
+    use_tls = os.getenv("SMTP_USE_TLS", "true").lower() in ("1", "true", "yes")
+
+    try:
+        if use_ssl:
+            with smtplib.SMTP_SSL(host, port, timeout=30) as smtp:
+                if user and password:
+                    smtp.login(user, password)
+                smtp.send_message(message)
+        else:
+            with smtplib.SMTP(host, port, timeout=30) as smtp:
+                smtp.ehlo()
+                if use_tls:
+                    smtp.starttls()
+                    smtp.ehlo()
+                if user and password:
+                    smtp.login(user, password)
+                smtp.send_message(message)
+        log.info("Email sent to %s", ", ".join(to_addrs))
+    except Exception as exc:
+        log.error("Failed to send log email: %s", exc)
+
+
+def create_log_buffer() -> tuple[StringIO, logging.Handler]:
+    buffer = StringIO()
+    handler = logging.StreamHandler(buffer)
+    handler.setFormatter(logging.Formatter(
+        "%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    ))
+    log.addHandler(handler)
+    return buffer, handler
+
+
 def build_record(
     title: str,
     description: str,
@@ -266,17 +330,8 @@ COLLEGEVINE_PAGES = [
     "https://blog.collegevine.com/high-school-internships-los-angeles",
     "https://blog.collegevine.com/high-school-internships-san-jose",
     "https://blog.collegevine.com/high-school-internships-miami",
-    "https://blog.collegevine.com/high-school-summer-programs",
     "https://blog.collegevine.com/free-summer-programs-for-high-school-students",
-    "https://blog.collegevine.com/stem-summer-programs-for-high-school",
-    "https://blog.collegevine.com/leadership-programs-for-high-school-students",
-    "https://blog.collegevine.com/fellowships-for-high-school-students",
-    "https://blog.collegevine.com/grants-for-high-school-students",
-    "https://blog.collegevine.com/extracurricular-activities-for-high-school-students",
-    "https://blog.collegevine.com/high-school-summer-programs-new-york",
-    "https://blog.collegevine.com/math-summer-programs",
     "https://blog.collegevine.com/online-summer-programs-for-high-school-students",
-    "https://blog.collegevine.com/25-summer-leadership-programs-for-high-school-students",
 ]
 
 
@@ -300,26 +355,14 @@ SCHOLARSHIPS360_PAGES = [
     "https://scholarships360.org/scholarships/summer-scholarships/",
     "https://scholarships360.org/careers/internship-for-high-school-students/",
     "https://scholarships360.org/college-admissions/summer-programs-for-high-school-students/",
-    "https://scholarships360.org/scholarships/stem-scholarships/",
-    "https://scholarships360.org/scholarships/scholarships-for-women/",
-    "https://scholarships360.org/scholarships/scholarships-for-minority-students/",
     "https://scholarships360.org/scholarships/need-based-scholarships/",
-    "https://scholarships360.org/scholarships/merit-scholarships/",
-    "https://scholarships360.org/scholarships/art-scholarships/",
     "https://scholarships360.org/scholarships/creative-writing-scholarships/",
     "https://scholarships360.org/careers/medical-internships-for-high-school-students/",
-    "https://scholarships360.org/careers/engineering-internships-for-high-school-students/",
     "https://scholarships360.org/scholarships/community-service-scholarships/",
     "https://scholarships360.org/scholarships/leadership-scholarships/",
-    "https://scholarships360.org/scholarships/stem-scholarships-for-high-school/",
     "https://scholarships360.org/scholarships/scholarships-for-black-students/",
     "https://scholarships360.org/scholarships/scholarships-for-hispanic-students/",
-    "https://scholarships360.org/scholarships/scholarships-for-asian-students/",
-    "https://scholarships360.org/scholarships/scholarships-for-native-american-students/",
-    "https://scholarships360.org/scholarships/athletic-scholarships/",
     "https://scholarships360.org/scholarships/nursing-scholarships/",
-    "https://scholarships360.org/scholarships/music-scholarships/",
-    "https://scholarships360.org/scholarships/environmental-scholarships/",
 ]
 
 
@@ -337,15 +380,7 @@ def scrape_scholarships360() -> list[dict]:
 
 # ── 3. Niche ──────────────────────────────────────────────────────────────────
 NICHE_PAGES = [
-    "https://www.niche.com/colleges/scholarships/",
-    "https://www.niche.com/colleges/scholarships/type/merit-based/",
-    "https://www.niche.com/colleges/scholarships/type/need-based/",
-    "https://www.niche.com/colleges/scholarships/type/stem/",
-    "https://www.niche.com/colleges/scholarships/type/arts/",
-    "https://www.niche.com/colleges/scholarships/type/community-service/",
-    "https://www.niche.com/colleges/scholarships/type/first-generation/",
-    "https://www.niche.com/colleges/scholarships/type/athletic/",
-    "https://www.niche.com/colleges/scholarships/type/international/",
+    # Niche currently blocks scraping with 403 responses.
 ]
 
 
@@ -425,19 +460,6 @@ def scrape_goingmerry() -> list[dict]:
 # ── 5. Bold.org ───────────────────────────────────────────────────────────────
 BOLDORG_PAGES = [
     "https://bold.org/scholarships/by-year/high-school/",
-    "https://bold.org/scholarships/stem/",
-    "https://bold.org/scholarships/community-service/",
-    "https://bold.org/scholarships/minority/",
-    "https://bold.org/scholarships/women/",
-    "https://bold.org/scholarships/first-generation/",
-    "https://bold.org/scholarships/arts/",
-    "https://bold.org/scholarships/leadership/",
-    "https://bold.org/scholarships/no-essay/",
-    "https://bold.org/scholarships/need-based/",
-    "https://bold.org/scholarships/merit/",
-    "https://bold.org/scholarships/athletic/",
-    "https://bold.org/scholarships/nursing/",
-    "https://bold.org/scholarships/environmental/",
 ]
 
 
@@ -481,19 +503,10 @@ def scrape_boldorg() -> list[dict]:
 
 # ── 6. Fastweb ────────────────────────────────────────────────────────────────
 FASTWEB_PAGES = [
-    "https://www.fastweb.com/college-scholarships/articles/scholarships-for-high-school-students",
-    "https://www.fastweb.com/college-scholarships/articles/stem-scholarships-for-high-school-students",
     "https://www.fastweb.com/college-scholarships/articles/internships-for-high-school-students",
     "https://www.fastweb.com/college-scholarships/articles/summer-programs-for-high-school-students",
-    "https://www.fastweb.com/college-scholarships/articles/scholarships-for-women-in-stem",
     "https://www.fastweb.com/college-scholarships/articles/minority-scholarships",
-    "https://www.fastweb.com/college-scholarships/articles/scholarships-for-seniors",
     "https://www.fastweb.com/college-scholarships/articles/community-service-scholarships",
-    "https://www.fastweb.com/college-scholarships/articles/leadership-scholarships",
-    "https://www.fastweb.com/college-scholarships/articles/art-scholarships",
-    "https://www.fastweb.com/college-scholarships/articles/music-scholarships",
-    "https://www.fastweb.com/college-scholarships/articles/need-based-scholarships",
-    "https://www.fastweb.com/college-scholarships/articles/merit-scholarships",
 ]
 
 
@@ -512,16 +525,7 @@ def scrape_fastweb() -> list[dict]:
 # ── 7. College Transitions ────────────────────────────────────────────────────
 COLLEGE_TRANSITIONS_PAGES = [
     "https://www.collegetransitions.com/blog/summer-programs/",
-    "https://www.collegetransitions.com/blog/internships-for-high-school-students/",
-    "https://www.collegetransitions.com/blog/scholarships-for-high-school-students/",
-    "https://www.collegetransitions.com/blog/competitions-for-high-school-students/",
     "https://www.collegetransitions.com/blog/research-opportunities-for-high-school-students/",
-    "https://www.collegetransitions.com/blog/community-service-opportunities/",
-    "https://www.collegetransitions.com/blog/leadership-programs/",
-    "https://www.collegetransitions.com/blog/fellowships-for-high-school-students/",
-    "https://www.collegetransitions.com/blog/grants-for-high-school-students/",
-    "https://www.collegetransitions.com/blog/free-summer-programs/",
-    "https://www.collegetransitions.com/blog/stem-competitions-for-high-school-students/",
 ]
 
 
@@ -539,17 +543,7 @@ def scrape_college_transitions() -> list[dict]:
 
 # ── 8. PrepScholar Blog ───────────────────────────────────────────────────────
 PREPSCHOLAR_PAGES = [
-    "https://blog.prepscholar.com/best-summer-programs-for-high-school-students",
     "https://blog.prepscholar.com/internships-for-high-school-students",
-    "https://blog.prepscholar.com/scholarships-for-high-school-students",
-    "https://blog.prepscholar.com/summer-research-programs-for-high-school-students",
-    "https://blog.prepscholar.com/stem-scholarships-for-high-school-students",
-    "https://blog.prepscholar.com/college-scholarships-for-high-school-juniors",
-    "https://blog.prepscholar.com/free-summer-programs-for-high-school-students",
-    "https://blog.prepscholar.com/stem-internships-for-high-school-students",
-    "https://blog.prepscholar.com/competitions-for-high-school-students",
-    "https://blog.prepscholar.com/grants-for-high-school-students",
-    "https://blog.prepscholar.com/high-school-fellowships",
 ]
 
 
@@ -568,11 +562,6 @@ def scrape_prepscholar() -> list[dict]:
 # ── 9. ScholarLaunch ──────────────────────────────────────────────────────────
 SCHOLARLAUNCH_PAGES = [
     "https://www.scholarlaunch.org/blog/best-spring-programs-for-high-school-students-in-2026",
-    "https://www.scholarlaunch.org/blog/best-summer-programs-for-high-school-students",
-    "https://www.scholarlaunch.org/blog/internships-for-high-school-students",
-    "https://www.scholarlaunch.org/blog/scholarships-for-high-school-students",
-    "https://www.scholarlaunch.org/blog/stem-programs-for-high-school-students",
-    "https://www.scholarlaunch.org/blog/leadership-programs-for-high-school-students",
 ]
 
 
@@ -590,12 +579,8 @@ def scrape_scholarlaunch() -> list[dict]:
 
 # ── 10. OpportunityDesk ───────────────────────────────────────────────────────
 OPPORTUNITYDESK_PAGES = [
-    "https://opportunitydesk.org/category/scholarships/",
-    "https://opportunitydesk.org/category/internships/high-school-internships/",
     "https://opportunitydesk.org/category/fellowships/",
     "https://opportunitydesk.org/category/grants/",
-    "https://opportunitydesk.org/category/competitions/",
-    "https://opportunitydesk.org/category/programs/",
 ]
 
 
@@ -808,6 +793,28 @@ def upsert_to_mongo(records: list[dict]) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_job() -> dict:
+    buffer, handler = create_log_buffer()
+    try:
+        stats = _run_job()
+    finally:
+        log.removeHandler(handler)
+        log_text = buffer.getvalue()
+
+    subject = f"ScholarSite Scraper run — {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}"
+    email_body = (
+        f"ScholarSite scraper completed.\n"
+        f"Inserted: {stats['inserted']}\n"
+        f"Updated: {stats['updated']}\n"
+        f"Unchanged: {stats['unchanged']}\n"
+        f"Errors: {stats['errors']}\n"
+        f"Total: {stats['total']}\n\n"
+        "Full log:\n\n" + log_text
+    )
+    send_email(subject, email_body)
+    return stats
+
+
+def _run_job() -> dict:
     log.info("=" * 65)
     log.info("ScholarSite Scraper v3  —  %s", datetime.now(timezone.utc).isoformat())
     log.info("=" * 65)
