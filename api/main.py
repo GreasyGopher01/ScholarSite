@@ -17,7 +17,7 @@ from bson import ObjectId
 load_dotenv()
 
 # Configuration (loaded from environment; .env values override defaults)
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb+srv://scholarsite:1LdbHC9zmSZxWKrR@cluster0.djrvguc.mongodb.net/?appName=Cluster0")
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb+srv://scholarsite:nN5gCJjtdCC2j0ug@cluster0.zsv8noe.mongodb.net/?appName=Cluster0")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "scholarsite")
 JWT_SECRET = os.getenv("JWT_SECRET", "your-secret-key-change-in-production-xyz123")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
