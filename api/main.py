@@ -32,7 +32,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:4200",
         "http://localhost:3000",
-        "https://scholar-site.vercel.app",
+        "https://my-scholarsite.vercel.app",
         "https://scholar-site-mu.vercel.app",
         "https://scholar-site-j02vo44mu-taufeeqs-projects-dbb5c752.vercel.app"
     ],
