@@ -23,7 +23,7 @@ JWT_SECRET = os.getenv("JWT_SECRET", "your-secret-key-change-in-production-xyz12
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_EXPIRATION_HOURS = int(os.getenv("JWT_EXPIRATION_HOURS", str(24 * 7)))
 #GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com")
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "616672619286-uu07ak8p8sutcokrjjh1hjn27jmbof98.apps.googleusercontent.com")
+GOOGLE_CLIENT_ID = "616672619286-uu07ak8p8sutcokrjjh1hjn27jmbof98.apps.googleusercontent.com"
 
 app = FastAPI()
 
