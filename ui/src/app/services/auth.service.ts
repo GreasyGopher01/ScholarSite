@@ -55,7 +55,7 @@ export class AuthService {
     if (typeof google !== 'undefined') {
       console.log('Google SDK loaded, initializing sign-in');
       google.accounts.id.initialize({
-        client_id: '1068695482466-q6q5kllteel8ue5b4guv6qephtgdqhjm.apps.googleusercontent.com',
+        client_id: '616672619286-uu07ak8p8sutcokrjjh1hjn27jmbof98.apps.googleusercontent.com',
         callback: (response: any) => this.handleGoogleCallback(response),
         auto_select: false,
         cancel_on_tap_outside: true
